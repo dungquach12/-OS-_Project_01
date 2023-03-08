@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{fcfddbca-f5e6-4575-8299-81e1d8b1ad1e}</ProjectGuid>
-    <RootNamespace>OSProject01</RootNamespace>
+    <ProjectGuid>{a224cb86-8149-43b9-a3e5-370246dcff25}</ProjectGuid>
+    <RootNamespace>test</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,11 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FAT32.cpp" />
-    <ClCompile Include="[OS]_Project_01.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="FAT32.h" />
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
