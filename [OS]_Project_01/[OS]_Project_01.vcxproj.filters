@@ -18,12 +18,18 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FAT32.cpp">
+    <ClCompile Include="Boorsector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RDET.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FAT32.h">
+    <ClInclude Include="Bootsector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="REDT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

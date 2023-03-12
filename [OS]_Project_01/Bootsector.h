@@ -6,7 +6,11 @@
 
 using namespace std;
 
-struct FAT32 {
+int ReadSector(LPCWSTR  drive, int numSector, BYTE sector[512]);
+
+string hex2string(BYTE bArr[], int start, int l);
+
+struct Bootsector {
 
     // Boot sector info
     string BS_FilSysType;
@@ -48,8 +52,6 @@ public:
     uint32_t root_cluster(BYTE bArr[]);
  
     int RDET_size();
-
-
 
     int k_cluster_to_i_sector(int k);
     uint32_t TotalSector(BYTE bArr[]);

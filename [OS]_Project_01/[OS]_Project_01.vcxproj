@@ -128,11 +128,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FAT32.cpp" />
+    <ClCompile Include="Boorsector.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RDET.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FAT32.h" />
+    <ClInclude Include="Bootsector.h" />
+    <ClInclude Include="REDT.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
