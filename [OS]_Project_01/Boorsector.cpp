@@ -32,14 +32,6 @@ int ReadSector(LPCWSTR  drive, int numSector, BYTE sector[512])
     }
 }
 
-
-string hex2string(BYTE bArr[], int start, int l) {
-    string res;
-    for (int i = start; i < start + l; i++)
-        res += bArr[i];
-    return res;
-}
-
 // Boot sector info
 
 string Bootsector::FAT_type(BYTE bArr[]) {

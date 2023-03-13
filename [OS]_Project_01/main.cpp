@@ -3,12 +3,6 @@
     take from website: https://download.microsoft.com›fatgen103
 */
 
-
-#include <windows.h>
-#include <iostream>
-#include <stdio.h>
-#include <string>
-
 #include"Bootsector.h"
 #include"REDT.h"
 
@@ -45,7 +39,7 @@ int main(int argc, char** argv)
     cin.ignore();
     cout << endl;
     File f;
-    f.readRDET(boot.FirstDataSector, boot.BPB_RsvdSecCnt);
+    f.readRDET(boot);
 
     return 0;
 }

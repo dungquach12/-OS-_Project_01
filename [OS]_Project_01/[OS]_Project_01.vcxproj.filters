@@ -24,12 +24,18 @@
     <ClCompile Include="RDET.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Support.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bootsector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="REDT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Support.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

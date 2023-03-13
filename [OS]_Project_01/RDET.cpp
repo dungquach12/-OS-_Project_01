@@ -1,50 +1,36 @@
 #include"REDT.h"
 
 string File::fileType(uint8_t ATTRIBUTE) {
-	switch (ATTRIBUTE) {
-	case ATTR_READ_ONLY:
-		return "READ_ONLY";
-		break;
-	case ATTR_HIDDEN:
-		return "HIDDEN";
-		break;
-	case ATTR_SYSTEM:
-		return "SYSTEM";
-		break;
-	case ATTR_VOLUME_ID:
-		return "VOLUME_ID";
-		break;
-	case ATTR_DIRECTORY:
-		return "DIRECTORY";
-		break;
-	case ATTR_ARCHIVE:
-		return "ARCHIVE";
-		break;
+	string Attr;
+	bool checkSet[8] = {false};
+	// check if bit is set or not
+	for (int i = 0; i < 8; i++) {
+		if (ATTRIBUTE & (1 << i) && i == 0)
+			Attr += "READ_ONLY/";
+		if (ATTRIBUTE & (1 << i) && i == 1)
+			Attr += "HIDDEN/";
+		if (ATTRIBUTE & (1 << i) && i == 2)
+			Attr += "SYSTEM/";
+		if (ATTRIBUTE & (1 << i) && i == 3)
+			Attr += "VOLUME_ID/";
+		if (ATTRIBUTE & (1 << i) && i == 4)
+			Attr += "DIRECTORY/";
+		if (ATTRIBUTE & (1 << i) && i == 5)
+			Attr += "ARCHIVE/";
 	}
-	return "Other type/ Attribute!";
+	Attr += '\0';
+	return Attr;
 }
 
-int hex2Int(BYTE bArr[512], int start, int num) {
-	int result = 0;
-	for (int i = start + num - 1; i >= start; i--) {
-		result = result * 256 + bArr[i];
-	}
-	return result;
-}
-
-void File::readRDET(uint32_t FirstDataSector, uint16_t BPB_RsvdSecCnt) {
+void File::readRDET(Bootsector boot) {
 	BYTE RDET_TABLE[512];
 	BYTE FAT_TABLE_1[512];
-	ReadSector(L"\\\\.\\E:", FirstDataSector, RDET_TABLE);
-	ReadSector(L"\\\\.\\E:", BPB_RsvdSecCnt, FAT_TABLE_1);
+	ReadSector(L"\\\\.\\E:", boot.FirstDataSector, RDET_TABLE);
+	ReadSector(L"\\\\.\\E:", boot.BPB_RsvdSecCnt, FAT_TABLE_1);
 
 	File files[BUFFER];	// Chua tat ca cac file trong RDET
 	int fileCount = 0;
 	int byteCount = 0;		// Dem so byte da doc
-
-	cout << "------------" << endl;
-
-
 	while (byteCount < 512) {
 		int entry_type;
 		entry_type = hex2Int(RDET_TABLE, 0 + byteCount, 1);
@@ -74,7 +60,7 @@ void File::readRDET(uint32_t FirstDataSector, uint16_t BPB_RsvdSecCnt) {
 				files[fileCount - 1].NAME += Stmp[i].SUB_NAME_5 + Stmp[i].SUB_NAME_6 + Stmp[i].SUB_NAME_2;  // Set file name and extension
 				count--;
 			}
-
+			files[fileCount - 1].NAME += '\0';
 			// Get start cluster
 			MainEntry Mtmp;
 			memcpy(&Mtmp.DIR_FstClusHI, RDET_TABLE + 14 + byteCount + 32 * countSubEntry, 2);
@@ -86,7 +72,7 @@ void File::readRDET(uint32_t FirstDataSector, uint16_t BPB_RsvdSecCnt) {
 			files[fileCount - 1].DIR_FileSize = Mtmp.DIR_FileSize; // Set file size
 			delete[] Stmp;
 
-			//READ_FAT_TABLE(files[fileCount - 1], BootSector, FAT_TABLE_1, files[fileCount - 1].DIR_FstClus);
+			//READ_FAT_TABLE(files[fileCount - 1], boot, FAT_TABLE_1, files[fileCount - 1].DIR_FstClus);
 
 			byteCount += 32 * countSubEntry;
 		}
@@ -101,7 +87,8 @@ void File::readRDET(uint32_t FirstDataSector, uint16_t BPB_RsvdSecCnt) {
 			memcpy(&Mtmp.DIR_FileSize, RDET_TABLE + 28 + byteCount, 4);
 
 			// Set file
-			files[fileCount - 1].NAME = Mtmp.SHORT_NAME + '.' + Mtmp.NAME_EXTENSION;
+			files[fileCount - 1].NAME = Mtmp.SHORT_NAME + '.' + Mtmp.NAME_EXTENSION + '\0';
+			removeSpaces(files[fileCount - 1].NAME);
 			files[fileCount - 1].Attr = Mtmp.Attr;
 			files[fileCount - 1].DIR_FstClus = (Mtmp.DIR_FstClusHI * 256 * 256) + Mtmp.DIR_FstClusLO;
 			files[fileCount - 1].DIR_FileSize = Mtmp.DIR_FileSize;
@@ -110,28 +97,26 @@ void File::readRDET(uint32_t FirstDataSector, uint16_t BPB_RsvdSecCnt) {
 	}
 	cout << endl;
 	for (int i = 0; i < fileCount; i++) {
-		cout << "Ten File:						" << files[i].NAME << endl;
-		cout << "Thuoc tinh:					" << fileType(files[i].Attr) << endl;
-		cout << "Cluster bat dau:				" << files[i].DIR_FstClus << endl;
-		cout << "Kich thuoc file:				" << files[i].DIR_FileSize << endl;
-		//cout << "Sector bat dau va ket thuc:	" << files[i].START_SECTOR << " -> " << files[i].END_SECTOR << endl;
+		cout << "Ten File:					" << files[i].NAME << endl;
+		cout << "Thuoc tinh:				" << fileType(files[i].Attr) << endl;
+		cout << "Cluster bat dau:			" << files[i].DIR_FstClus << endl;
+		cout << "Kich thuoc file:			" << files[i].DIR_FileSize << endl;
 	}
 }
 
-//void File::READ_FAT_TABLE(File& theFile, BYTE BootSector[], BYTE FAT_TABLE[], uint32_t DIR_FstClus) {
-//	Bootsector b;
-//	b.ReadBS(BootSector);
-//	int S_SECTOR = b.k_cluster_to_i_sector(DIR_FstClus);
-//	int E_SECTOR = S_SECTOR;
-//	int FATOffset = DIR_FstClus * 4;
-//	while (true) {
-//		int N_SECTOR = hex2Int(FAT_TABLE, FATOffset, 4);
-//		FATOffset += 4;
-//		END_SECTOR += b.BPB_SecPerClus;
-//		if (N_SECTOR == END_FILE)
-//			break;
-//	}
-//
-//	theFile.START_SECTOR = S_SECTOR;
-//	theFile.END_SECTOR = E_SECTOR;
-//}
+void File::READ_FAT_TABLE(File& theFile, Bootsector boot, BYTE FAT_TABLE[], uint32_t DIR_FstClus) {
+	uint32_t S_SECTOR = boot.k_cluster_to_i_sector(DIR_FstClus);
+	uint32_t E_SECTOR = S_SECTOR;
+	int FATOffset = DIR_FstClus * 4;
+	while (true) {
+		uint32_t N_SECTOR;
+		memcpy(&N_SECTOR, FAT_TABLE + FATOffset, 4);
+		FATOffset += 4;
+		END_SECTOR += boot.BPB_SecPerClus;
+		if (N_SECTOR == END_FILE)
+			break;
+	}
+
+	theFile.START_SECTOR = S_SECTOR;
+	theFile.END_SECTOR = E_SECTOR;
+}

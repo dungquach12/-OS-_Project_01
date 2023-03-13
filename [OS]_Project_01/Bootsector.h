@@ -4,18 +4,16 @@
 #include <stdio.h>
 #include <string>
 
+#include"Support.h"
+
 using namespace std;
 
 int ReadSector(LPCWSTR  drive, int numSector, BYTE sector[512]);
-
-string hex2string(BYTE bArr[], int start, int l);
 
 struct Bootsector {
 
     // Boot sector info
     string BS_FilSysType;
-
-
     uint16_t BPB_BytsPerSec;    // byte/sector, sector size,                    Offset 11
     int BPB_SecPerClus;         // Sector per cluster,                          Offset 13
     uint16_t BPB_RsvdSecCnt;    // Sector in Bootsector, Reserved sector,       Offset 14
@@ -24,8 +22,6 @@ struct Bootsector {
     uint32_t BPB_TotSec32;      // Volume size                                  Offset 32
     uint32_t BPB_FATSz32;       // FAT table size (sector/FAT)                  Offset 36
     uint32_t BPB_RootClus;      // starting cluster of RDET;                    Offset 44
-
-
 
 
     // Calculated info from boot sector info
