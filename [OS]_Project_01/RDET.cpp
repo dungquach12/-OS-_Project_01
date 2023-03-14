@@ -74,7 +74,7 @@ void FileS::readRDET(Bootsector boot, BYTE FAT_TABLE_1[]) {
 	while (byteCount < 512) {
 		int entry_status;
 		entry_status = hex2Int(RDET_TABLE, 0 + byteCount, 1);
-		if (entry_status == DELETED_FILE) {
+		if (entry_status == DELETED_FILE || entry_status == 0) {
 			byteCount += 32;		// 32 is size of an entry
 			continue;
 		}
@@ -131,6 +131,9 @@ void FileS::readRDET(Bootsector boot, BYTE FAT_TABLE_1[]) {
 			if (haveIT) {
 				READ_TXT_FILE(&files[fileCount - 1]);
 			}
+
+			// Read child folder
+
 			byteCount += 32 * countSubEntry;
 		}
 		else {
@@ -162,12 +165,14 @@ void FileS::readRDET(Bootsector boot, BYTE FAT_TABLE_1[]) {
 			if (Mtmp.NAME_EXTENSION == "TXT") {
 				READ_TXT_FILE(&files[fileCount - 1]);
 			}
+
+			// Read child folder
 			byteCount += 32;
 		}
 	}
 	cout << endl;
 	for (int i = 0; i < fileCount; i++) {
-		if (i == 4) {
+		if (i > 0) {
 			cout << "Continue?(enter)" << endl;
 			cin.ignore();
 		}
@@ -177,6 +182,7 @@ void FileS::readRDET(Bootsector boot, BYTE FAT_TABLE_1[]) {
 		cout << "Kich thuoc file:			" << files[i].DIR_FileSize << endl;
 		cout << "Sector bat dau/ket thuc:		" << files[i].START_SECTOR << "/" << files[i].END_SECTOR << endl;
 		cout << "Noi dung txt neu co:			" << '\n' << files[i].Content << endl;
+		cout << "Cac file ben trong:			" << endl;
 		cout << '\n';
 	}
 }

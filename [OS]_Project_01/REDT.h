@@ -1,7 +1,7 @@
 #pragma once
 #include"Bootsector.h"
 
-#include<stack>
+#include<vector>
 
 #define BUFFER 50
 
@@ -20,7 +20,7 @@ struct FileS {
 	uint32_t START_SECTOR;
 	uint32_t END_SECTOR;
 	string Content;
-
+	vector<FileS> ChildFolder;
 public:
 	FileS() {
 		NAME = "";
@@ -35,6 +35,8 @@ public:
 	void readRDET(Bootsector boot, BYTE FAT_TABLE_1[]);
 	void READ_FAT_TABLE(FileS* theFile, Bootsector boot, BYTE FAT_TABLE[]);
 	void READ_TXT_FILE(FileS* theTXTfile);
+
+	
 };
 
 struct MainEntry {
