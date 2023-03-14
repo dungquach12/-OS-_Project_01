@@ -2,18 +2,20 @@
     This project is reference from fatgen103.docx document,
     take from website: https://download.microsoft.com›fatgen103
 */
-
+//#include <iomanip>
 #include"Bootsector.h"
 #include"REDT.h"
 
 using namespace std;
 
+//#define HEX( x ) setw(2) << setfill('0') << hex << (int)(x)
+
 int main(int argc, char** argv)
 {
-
+    
     BYTE sector[512];
     ReadSector(L"\\\\.\\E:", 0, sector);
-
+    
     Bootsector boot;
     boot.ReadBS(sector);
 
@@ -36,10 +38,15 @@ int main(int argc, char** argv)
     cout << "-------------------------------------------" << endl;
 
     cout << "Xem noi dung trong bang RDET? (Press Enter)!" << endl;
+    BYTE FAT_TABLE_1[512];
+    ReadSector(L"\\\\.\\E:", boot.BPB_RsvdSecCnt, FAT_TABLE_1);
     cin.ignore();
     cout << endl;
-    File f;
-    f.readRDET(boot);
+    FileS f;
+    f.readRDET(boot, FAT_TABLE_1);
+
+
+
 
     return 0;
 }

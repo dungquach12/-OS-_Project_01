@@ -30,8 +30,7 @@ struct Bootsector {
 
 
     // Other
-    uint32_t total_sector;
-    int byCluster = 0; // byte/cluster, cluster size
+
 public:
     void ReadBS(BYTE b[]);
 
@@ -50,6 +49,4 @@ public:
     int RDET_size();
 
     int k_cluster_to_i_sector(int k);
-    uint32_t TotalSector(BYTE bArr[]);
-    int cluster_size();
 };

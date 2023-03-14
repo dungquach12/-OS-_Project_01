@@ -25,57 +25,60 @@ int ReadSector(LPCWSTR  drive, int numSector, BYTE sector[512])
     if (!ReadFile(device, sector, 512, &bytesRead, NULL))
     {
         printf("ReadFile: %u\n", GetLastError());
+        return 1;
     }
     else
     {
-        printf("Success!\n");
+        //printf("Success!\n");
+        return 0;
     }
 }
 
 // Boot sector info
 
 string Bootsector::FAT_type(BYTE bArr[]) {
-    this->BS_FilSysType = hex2string(bArr, 5 * 16 + 2, 8); //Offset 52; byte 8
+    this->BS_FilSysType = hex2string(bArr, 0x52, 8); //Offset 52; byte 8
+    this->BS_FilSysType += '\0';
     return this->BS_FilSysType;
 }
 
 uint16_t Bootsector::so_byte_moi_sector(BYTE bArr[]) {
-    memcpy(&this->BPB_BytsPerSec, bArr + 11, 2);
+    memcpy(&this->BPB_BytsPerSec, bArr + 0xB, 2);
     return this->BPB_BytsPerSec;
 }
 
 int Bootsector::so_sector_tren_cluster(BYTE bArr[]) {
-    this->BPB_SecPerClus = bArr[13]; //Offset D, byte 1
+    this->BPB_SecPerClus = bArr[0xD]; //Offset D, byte 1
     return this->BPB_SecPerClus;
 }
 
 uint16_t Bootsector::so_sector_trong_bootsector(BYTE bArr[]) {
-    memcpy(&this->BPB_RsvdSecCnt, bArr + 14, 2); //Offset E, byte 2
+    memcpy(&this->BPB_RsvdSecCnt, bArr + 0xE, 2); //Offset E, byte 2
     return this->BPB_RsvdSecCnt;
 }
 
 int Bootsector::so_bang_FAT(BYTE bArr[]) {
-    this->BPB_NumFATs = bArr[16]; //Offset 10, byte 1
+    this->BPB_NumFATs = bArr[0x10]; //Offset 10, byte 1
     return this->BPB_NumFATs;
 }
 
 uint16_t Bootsector::entryRDET(BYTE bArr[]) {
-    memcpy(&BPB_RootEntCnt, bArr + 16 + 2, 2);
+    memcpy(&BPB_RootEntCnt, bArr + 0x11, 2);
     return this->BPB_RootEntCnt;
 }
 
 uint32_t Bootsector::kich_thuoc_volume(BYTE bArr[]) {
-    memcpy(&this->BPB_TotSec32, bArr + (16 * 2 + 0), 4);
+    memcpy(&this->BPB_TotSec32, bArr + 0x20, 4);
     return this->BPB_TotSec32;
 }
 
 uint32_t Bootsector::kick_thuoc_bang_FAT(BYTE bArr[512]) {
-    memcpy(&this->BPB_FATSz32, bArr + (16 * 2 + 4), 4); //Offset 24, byte 4
+    memcpy(&this->BPB_FATSz32, bArr + 0x24, 4); //Offset 24, byte 4
     return this->BPB_FATSz32;
 }
 
 uint32_t Bootsector::root_cluster(BYTE bArr[]) {
-    memcpy(&this->BPB_RootClus, bArr + (16 * 2 + 12), 4);
+    memcpy(&this->BPB_RootClus, bArr + 0x2C, 4);
     return this->BPB_RootClus;
 }
 
@@ -84,16 +87,6 @@ int Bootsector::k_cluster_to_i_sector(int k) {
     int res;
     res = this->BPB_RsvdSecCnt + this->BPB_FATSz32 * this->BPB_NumFATs + this->RootDirSectors + (k - 2) * this->BPB_SecPerClus;
     return res;
-}
-
-uint32_t Bootsector::TotalSector(BYTE bArr[]) {
-    memcpy(&this->total_sector, bArr + 16 * 2, 4);
-    return this->total_sector;
-}
-
-int Bootsector::cluster_size() {
-    this->byCluster = this->BPB_SecPerClus * this->BPB_BytsPerSec;
-    return this->byCluster;
 }
 
 // Main function
@@ -115,7 +108,5 @@ void Bootsector::ReadBS(BYTE b[]) {
     this->FirstDataSector = this->BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz32) + this->RootDirSectors;
 
     // Other
-    cluster_size();
-    TotalSector(b);
 }
 
