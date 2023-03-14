@@ -62,15 +62,6 @@ void FileS::READ_TXT_FILE(FileS* theFile) {
 	theFile->Content = content + '\0';
 }
 
-bool findTxt(string str) {
-	bool haveIT = false;
-	for (int i = 0; i < str.length() - 3; i++) {
-		if (str[i] == 't' && str[i + 1] == 'x' && str[i + 2] == 't')
-			haveIT = true;
-	}
-	return haveIT;
-}
-
 void FileS::readRDET(Bootsector boot, BYTE FAT_TABLE_1[]) {
 	BYTE RDET_TABLE[512];
 

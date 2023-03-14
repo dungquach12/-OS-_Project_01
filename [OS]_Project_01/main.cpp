@@ -2,13 +2,11 @@
     This project is reference from fatgen103.docx document,
     take from website: https://download.microsoft.com›fatgen103
 */
-//#include <iomanip>
+
 #include"Bootsector.h"
 #include"REDT.h"
 
 using namespace std;
-
-//#define HEX( x ) setw(2) << setfill('0') << hex << (int)(x)
 
 int main(int argc, char** argv)
 {
